@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodo - Reset Password (Gamer Edition)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Bungee&family=Outfit:wght@400;700;900&display=swap');
+
+        :root {
+            --monster-color: #a331ff;
+            --bg-dark: #0a0f24;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Background Stars Effect */
+        .background-stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: radial-gradient(#75befd 1px, transparent 1px), radial-gradient(#ff97ce 1px, transparent 1px);
+            background-size: 60px 60px, 110px 110px;
+            background-position: 0 0, 45px 45px;
+            opacity: 0.2;
+            animation: drift 30s linear infinite;
+        }
+
+        @keyframes drift {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(-50px, 50px, 0); }
+        }
+
+        .login-card {
+            background: rgba(8, 11, 27, 0.93);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(163, 49, 255, 0.2);
+            border-radius: 30px;
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 0 38px rgba(163, 49, 255, 0.2);
+        }
+
+        /* Monster Container */
+        .monster-area {
+            height: 160px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .monster {
+            width: 100px;
+            height: 110px;
+            background: var(--monster-color);
+            border-radius: 35px 35px 15px 15px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.3s;
+            z-index: 5;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Eyes */
+        .eye {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .eye-l { left: 15px; }
+        .eye-r { right: 15px; }
+
+        .pupil {
+            width: 12px;
+            height: 12px;
+            background: #000;
+            border-radius: 50%;
+            transition: transform 0.05s ease-out;
+        }
+
+        /* Tiny PC Setup */
+        .setup {
+            position: absolute;
+            bottom: 0;
+            width: 120px;
+            height: 35px;
+            background: #1a1a1a;
+            border-radius: 5px;
+            border-bottom: 4px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2px;
+            z-index: 6;
+        }
+        .key { width: 7px; height: 7px; background: #333; border-radius: 1px; }
+
+        /* Speech Bubble */
+        .speech {
+            position: absolute;
+            top: -15px;
+            right: -40px;
+            background: white;
+            color: black;
+            padding: 10px 14px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            display: none;
+            z-index: 20;
+            max-width: 200px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border: 2px solid #a331ff;
+        }
+
+        /* Form Elements */
+        h1 {
+            font-family: 'Bungee', cursive;
+            font-size: 1.7rem;
+            margin-bottom: 20px;
+            color: #7ad5ff;
+            text-shadow: 0 0 10px rgba(122, 213, 255, 0.5);
+        }
+
+        .field { margin-bottom: 15px; text-align: left; }
+        .field label { font-size: 10px; color: #777; text-transform: uppercase; margin-bottom: 4px; display: block; font-weight: bold; }
+        
+        .form-control {
+            width: 100%;
+            background: #0d0d0f;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px;
+            color: var(--monster-color);
+            outline: none;
+            font-family: 'Fira Code';
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus { border-color: var(--monster-color); }
+
+        .btn {
+            width: 100%;
+            background: var(--monster-color);
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            font-family: 'Bungee', cursive;
+            transition: all 0.3s;
+        }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(163, 49, 255, 0.4); }
+
+        /* Code Panel Style */
+        .code-panel {
+            margin-top: 20px;
+            border: 1px dashed rgba(163, 49, 255, 0.4);
+            border-radius: 10px;
+            padding: 12px;
+            background: rgba(9, 14, 30, 0.5);
+            font-family: 'Fira Code', monospace;
+            color: #adbfff;
+            font-size: 0.75rem;
+            text-align: left;
+        }
+        .code-panel span { color: #a331ff; font-weight: bold; }
+
+        .helper { margin-top: 15px; font-size: 0.9rem; }
+        .link-fun { color: #70d0ff; font-weight: 700; text-decoration: none; }
+
+        /* Animations */
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0) rotate(0); }
+            25% { transform: translate(-2px, 0) rotate(-2deg); }
+            75% { transform: translate(2px, 0) rotate(2deg); }
+        }
+        .annoyed { animation: shake 0.1s infinite !important; background: #ff3131 !important; }
+        .spy-mode .monster { transform: scale(1.1) translateY(-5px) rotate(-5deg); }
+    </style>
+</head>
+<body>
+
+    <div class="background-stars"></div>
+
+    <div class="login-card">
+        <div class="monster-area">
+            <div class="speech" id="speech">FORGOT THE PASSWORD? LOL!</div>
+            <div class="monster" id="monster">
+                <div class="eye eye-l"><div class="pupil" id="pL"></div></div>
+                <div class="eye eye-r"><div class="pupil" id="pR"></div></div>
+                <div class="setup">
+                    <div class="key" style="background: cyan;"></div>
+                    <div class="key"></div><div class="key"></div>
+                    <div class="key" style="background: magenta;"></div>
+                </div>
+            </div>
+        </div>
+
+        <h1>RESET_PASS.SH</h1>
+
+        <form method="post" action="{{ url_for('reset', username=username) }}">
+            <div class="field">
+                <label>Input: New_Access_Key</label>
+                <input type="password" name="password" class="form-control" id="new_password" placeholder="••••••••" required>
+            </div>
+            <div class="field">
+                <label>Verify: Access_Key</label>
+                <input type="password" name="confirm_password" class="form-control" id="confirm_password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn">RECOMPILE_AUTH</button>
+        </form>
+
+        <div class="helper">
+            <a class="link-fun" href="{{ url_for('login') }}">[ Back to Login ]</a>
+        </div>
+
+        <div class="code-panel">
+            <div><span>update</span>: passwordHash = SHA256(new_password);</div>
+            <div><span>note</span>: old hash removed, no plaintext risk.</div>
+        </div>
+    </div>
+
+    <script>
+        const monster = document.getElementById('monster');
+        const speech = document.getElementById('speech');
+        const pL = document.getElementById('pL');
+        const pR = document.getElementById('pR');
+        const newPass = document.getElementById('new_password');
+        const confirmPass = document.getElementById('confirm_password');
+
+        let speechTimer;
+
+        function speak(text, duration = 8000) {
+            clearTimeout(speechTimer); // نلغي المؤقت السابق إذا وُجد
+            speech.innerText = text;
+            speech.style.display = 'block';
+            
+            speechTimer = setTimeout(() => { 
+                if(!monster.classList.contains('annoyed')) {
+                    speech.style.display = 'none';
+                }
+            }, duration); // تظل الرسالة ظاهرة للمدة المحددة (الافتراضي 8 ثوانٍ)
+        }
+
+        // Complaint when mouse is over
+        monster.addEventListener('mouseenter', () => {
+            monster.classList.add('annoyed');
+            speak("STOOOP! I'M ENCRYPTING! DON'T TOUCH!", 10000); // 10 ثواني عند لمسه
+        });
+
+        monster.addEventListener('mouseleave', () => {
+            monster.classList.remove('annoyed');
+            // لا نخفي الرسالة فوراً، نتركها تأخذ وقتها
+        });
+
+        // Eye Tracking
+        document.addEventListener('mousemove', (e) => {
+            if (monster.classList.contains('annoyed')) return;
+            const rect = monster.getBoundingClientRect();
+            const centerX = rect.left + rect.width/2;
+            const centerY = rect.top + rect.height/2;
+            const moveX = (e.clientX - centerX) / 20;
+            const moveY = (e.clientY - centerY) / 20;
+            pL.style.transform = `translate(${Math.max(-10, Math.min(10, moveX))}px, ${Math.max(-10, Math.min(10, moveY))}px)`;
+            pR.style.transform = `translate(${Math.max(-10, Math.min(10, moveX))}px, ${Math.max(-10, Math.min(10, moveY))}px)`;
+        });
+
+        // Input Logic
+        const focusPhrases = [
+            "I'M WATCHING... DON'T BE SHY!",
+            "IS IT '123456'? PLEASE TELL ME IT IS!",
+            "OOH, A NEW SECRET KEY? INTERESTING...",
+            "DOES THIS PASSWORD HAVE PIZZA IN IT?"
+        ];
+
+        [newPass, confirmPass].forEach(input => {
+            input.addEventListener('focus', () => {
+                const randomPhrase = focusPhrases[Math.floor(Math.random() * focusPhrases.length)];
+                speak(randomPhrase, 8000);
+                document.querySelector('.monster-area').classList.add('spy-mode');
+            });
+            input.addEventListener('blur', () => {
+                document.querySelector('.monster-area').classList.remove('spy-mode');
+            });
+            input.addEventListener('input', () => {
+                monster.style.transform = `translateY(-5px) rotate(${Math.random() * 10 - 5}deg)`;
+            });
+        });
+
+        // Initial greeting
+        setTimeout(() => speak("FORGOT THE PASSWORD AGAIN? TYPICAL HUMAN... LOL!", 10000), 1000);
+    </script>
+</body>
+</html>

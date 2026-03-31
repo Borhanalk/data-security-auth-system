@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kodo - User Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Bungee&family=Outfit:wght@400;700;900&display=swap');
+
+        :root {
+            --monster-color: #a331ff;
+            --bg-dark: #0a0f24;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Background Stars Effect */
+        .background-stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: radial-gradient(#75befd 1px, transparent 1px), radial-gradient(#ff97ce 1px, transparent 1px);
+            background-size: 60px 60px, 110px 110px;
+            background-position: 0 0, 45px 45px;
+            opacity: 0.2;
+            animation: drift 30s linear infinite;
+        }
+
+        @keyframes drift {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(-50px, 50px, 0); }
+        }
+
+        .dashboard-card {
+            background: rgba(8, 11, 27, 0.93);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(163, 49, 255, 0.2);
+            border-radius: 30px;
+            padding: 40px 30px;
+            width: 100%;
+            max-width: 520px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 0 38px rgba(163, 49, 255, 0.25);
+            animation: cardFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Monster Container */
+        .monster-area {
+            height: 150px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 25px;
+        }
+
+        .monster {
+            width: 90px;
+            height: 100px;
+            background: var(--monster-color);
+            border-radius: 30px 30px 12px 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 5;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .eye {
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .eye-l { left: 14px; }
+        .eye-r { right: 14px; }
+
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        /* Speech Bubble */
+        .speech {
+            position: absolute;
+            top: -10px;
+            right: -20px;
+            background: white;
+            color: black;
+            padding: 8px 14px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            display: none;
+            z-index: 20;
+            max-width: 180px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border: 2px solid var(--monster-color);
+        }
+
+        h1 {
+            font-family: 'Bungee', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #7ad5ff;
+            text-shadow: 0 0 15px rgba(122, 213, 255, 0.4);
+        }
+
+        p { margin: 15px 0; color: #d6e6ff; line-height: 1.6; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            background: rgba(163, 49, 255, 0.2);
+            color: #d899ff;
+            border: 1px solid rgba(163, 49, 255, 0.4);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .btn {
+            margin-top: 20px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #a331ff, #74d8ff);
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Bungee', cursive;
+            width: 100%;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(163, 49, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .code-status {
+            margin-top: 25px;
+            border-top: 1px solid rgba(163, 49, 255, 0.2);
+            padding-top: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: #777;
+            text-align: left;
+        }
+        .code-status span { color: var(--monster-color); }
+    </style>
+</head>
+<body>
+    <div class="background-stars"></div>
+
+    <div class="dashboard-card">
+        <div class="monster-area">
+            <div class="speech" id="speech">WELCOME BACK, MASTER!</div>
+            <div class="monster" id="monster">
+                <div class="eye eye-l"><div class="pupil" id="pL"></div></div>
+                <div class="eye eye-r"><div class="pupil" id="pR"></div></div>
+            </div>
+        </div>
+
+        <h1>USER_CONSOLE.EXE</h1>
+        
+        <p>System status: <span class="badge">Online</span></p>
+        <p>Greetings, <strong>{{ username }}</strong>. You have successfully bypassed the firewall. Secure data workflows are now operational.</p>
+        
+        <form action="{{ url_for('logout') }}" method="get">
+            <button class="btn">TERMINATE_SESSION</button>
+        </form>
+
+        <p style="margin-top: 10px; font-size: 0.9rem; color: #adadff;">انتقل إلى لوحة المشرف: <a href="{{ url_for('admin') }}" style="color: #70d0ff;">ADMIN_CENTER</a></p>
+
+        <div class="code-status">
+            <div><span>auth_level</span>: standard_user</div>
+            <div><span>secure_link</span>: active_sh256</div>
+            <div><span>kodo_mood</span>: happy_gaming</div>
+        </div>
+    </div>
+
+    <script>
+        const monster = document.getElementById('monster');
+        const speech = document.getElementById('speech');
+        const pL = document.getElementById('pL');
+        const pR = document.getElementById('pR');
+
+        let speechTimer;
+
+        function speak(text, duration = 8000) {
+            clearTimeout(speechTimer);
+            speech.innerText = text;
+            speech.style.display = 'block';
+            speechTimer = setTimeout(() => { 
+                speech.style.display = 'none';
+            }, duration);
+        }
+
+        // Eye Tracking
+        document.addEventListener('mousemove', (e) => {
+            const rect = monster.getBoundingClientRect();
+            const centerX = rect.left + rect.width/2;
+            const centerY = rect.top + rect.height/2;
+            const moveX = (e.clientX - centerX) / 25;
+            const moveY = (e.clientY - centerY) / 25;
+            pL.style.transform = `translate(${Math.max(-8, Math.min(8, moveX))}px, ${Math.max(-8, Math.min(8, moveY))}px)`;
+            pR.style.transform = `translate(${Math.max(-8, Math.min(8, moveX))}px, ${Math.max(-8, Math.min(8, moveY))}px)`;
+        });
+
+        // Click monster for random jokes
+        const jokes = [
+            "NEED MORE RAM? JUST DOWNLOAD IT!",
+            "I ATE THE SYSTEM ERRORS FOR LUNCH.",
+            "DON'T LOG OUT! THE PIXELS WILL MISS YOU.",
+            "YOUR PASSWORD IS SAFE WITH ME (MAYBE).",
+            "CAN WE PLAY MINECRAFT NOW?"
+        ];
+
+        monster.addEventListener('click', () => {
+            const joke = jokes[Math.floor(Math.random() * jokes.length)];
+            speak(joke, 6000);
+            monster.style.transform = "scale(1.2) rotate(10deg)";
+            setTimeout(() => monster.style.transform = "scale(1)", 200);
+        });
+
+        // Initial Greeting
+        setTimeout(() => speak("OH LOOK! A HUMAN IN THE CONSOLE!", 9000), 1000);
+    </script>
+</body>
+</html>

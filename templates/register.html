@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodo - Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Bungee&family=Outfit:wght@400;700&display=swap');
+
+        :root {
+            --monster-color: #a331ff;
+            --bg-dark: #0a0a0c;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(163, 49, 255, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .login-card {
+            background: rgba(20, 20, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(163, 49, 255, 0.2);
+            border-radius: 25px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        /* Monster Styling */
+        .monster-area {
+            height: 140px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .monster {
+            width: 80px;
+            height: 90px;
+            background: var(--monster-color);
+            border-radius: 25px 25px 12px 12px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 5;
+        }
+
+        .eye {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .eye-l { left: 12px; }
+        .eye-r { right: 12px; }
+
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background: #000;
+            border-radius: 50%;
+            transition: transform 0.05s ease-out;
+        }
+
+        .speech {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: white;
+            color: black;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 800;
+            display: none;
+            z-index: 20;
+            border: 2px solid var(--monster-color);
+        }
+
+        /* Form Styling */
+        .field { margin-bottom: 12px; text-align: left; }
+        .field label { font-size: 11px; color: #aaa; margin-bottom: 4px; display: block; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .input-box {
+            width: 100%;
+            background: #0d0d0f;
+            border: 1px solid #2a2a2e;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--monster-color);
+            outline: none;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+        .input-box:focus { border-color: var(--monster-color); background: #121217; }
+
+        .btn {
+            width: 100%;
+            background: var(--monster-color);
+            color: white;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-top: 15px;
+            cursor: pointer;
+            border: none;
+            font-family: 'Bungee', cursive;
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(163, 49, 255, 0.4); }
+
+        .annoyed { animation: shake 0.1s infinite !important; background: #ff3131 !important; }
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-2px, 1px); }
+            75% { transform: translate(2px, -1px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow"></div>
+
+    <div class="login-card">
+        <div class="monster-area">
+            <div class="speech" id="speech">I'M WATCHING!</div>
+            <div class="monster" id="monster">
+                <div class="eye eye-l"><div class="pupil" id="pL"></div></div>
+                <div class="eye eye-r"><div class="pupil" id="pR"></div></div>
+            </div>
+        </div>
+
+        <h2 class="text-lg font-bold mb-5" style="font-family: 'Bungee'; color: #7ad5ff;">USER_REGISTRATION</h2>
+        <!-- According to system design, the admin is initialized as the first user in the database.
+             Regular users can only register through this page -->
+        <p style="color: #ffea00; font-size: 12px; margin-bottom: 12px;">According to system design, the admin is initialized as the first user in the database. Regular users can only register through this page.</p>
+    <form method="POST" action="{{ url_for('register') }}">
+
+    <div class="field">
+        <label>Username</label>
+        <input type="text" name="username" class="input-box" required>
+    </div>
+
+    <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" class="input-box" required>
+    </div>
+
+    <div class="field">
+        <label>Confirm Password</label>
+        <input type="password" name="confirm_password" class="input-box" required>
+    </div>
+
+    <button class="btn" type="submit">CREATE ACCOUNT</button>
+    </form>
+
+        <p class="text-[10px] mt-5 text-gray-500">
+            Already have an account? <a href="{{ url_for('login') }}" class="text-purple-400 hover:underline">SIGN IN</a>
+        </p>
+    </div>
+
+    <script>
+        const monster = document.getElementById('monster');
+        const speech = document.getElementById('speech');
+        const pL = document.getElementById('pL');
+        const pR = document.getElementById('pR');
+        
+        function speak(text, duration = 2500) {
+            speech.innerText = text;
+            speech.style.display = 'block';
+            setTimeout(() => { 
+                if(!monster.classList.contains('annoyed')) speech.style.display = 'none'; 
+            }, duration);
+        }
+
+        // Eye Tracking
+        document.addEventListener('mousemove', (e) => {
+            if (monster.classList.contains('annoyed')) return;
+            const rect = monster.getBoundingClientRect();
+            const centerX = rect.left + rect.width/2;
+            const centerY = rect.top + rect.height/2;
+            const moveX = (e.clientX - centerX) / 20;
+            const moveY = (e.clientY - centerY) / 20;
+            
+            const limit = 6;
+            pL.style.transform = `translate(${Math.max(-limit, Math.min(limit, moveX))}px, ${Math.max(-limit, Math.min(limit, moveY))}px)`;
+            pR.style.transform = `translate(${Math.max(-limit, Math.min(limit, moveX))}px, ${Math.max(-limit, Math.min(limit, moveY))}px)`;
+        });
+
+        // Hover interaction
+        monster.addEventListener('mouseenter', () => {
+            monster.classList.add('annoyed');
+            speak("STOP POKING ME!");
+        });
+
+        monster.addEventListener('mouseleave', () => {
+            monster.classList.remove('annoyed');
+            speech.style.display = 'none';
+        });
+
+        // Input Interaction
+        document.querySelectorAll('.input-box').forEach(input => {
+            input.addEventListener('focus', (e) => {
+                if(e.target.type === 'password') {
+                    speak("OOH, A SECRET?");
+                    monster.style.transform = "scale(1.2) translateY(5px)";
+                } else if(e.target.id === 'regUser') {
+                    speak("COOL ALIAS!");
+                } else {
+                    speak("INTERESTING...");
+                }
+            });
+            input.addEventListener('blur', () => {
+                monster.style.transform = "scale(1)";
+                speech.style.display = 'none';
+            });
+        });
+
+        document.getElementById('registerBtn').onclick = () => {
+            speak("PROCESSING DATA...");
+        };
+    </script>
+</body>
+</html>

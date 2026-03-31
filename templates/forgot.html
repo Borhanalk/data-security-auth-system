@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodo - Forgot Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Bungee&family=Outfit:wght@400;700;900&display=swap');
+
+        :root {
+            --monster-color: #a331ff;
+            --bg-dark: #0a0f24;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Background Stars Effect */
+        .background-stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image: radial-gradient(#75befd 1px, transparent 1px), radial-gradient(#ff97ce 1px, transparent 1px);
+            background-size: 60px 60px, 110px 110px;
+            background-position: 0 0, 45px 45px;
+            opacity: 0.2;
+            animation: drift 30s linear infinite;
+        }
+
+        @keyframes drift {
+            from { transform: translate3d(0, 0, 0); }
+            to { transform: translate3d(-50px, 50px, 0); }
+        }
+
+        .card {
+            background: rgba(8, 11, 27, 0.93);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(163, 49, 255, 0.2);
+            border-radius: 30px;
+            padding: 30px;
+            width: 100%;
+            max-width: 470px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 0 38px rgba(163, 49, 255, 0.2);
+        }
+
+        /* Monster Container */
+        .monster-area {
+            height: 150px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .monster {
+            width: 90px;
+            height: 100px;
+            background: var(--monster-color);
+            border-radius: 30px 30px 12px 12px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.3s;
+            z-index: 5;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Eyes */
+        .eye {
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .eye-l { left: 14px; }
+        .eye-r { right: 14px; }
+
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background: #000;
+            border-radius: 50%;
+        }
+
+        /* Speech Bubble */
+        .speech {
+            position: absolute;
+            top: -15px;
+            right: -30px;
+            background: white;
+            color: black;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 11px;
+            font-weight: bold;
+            display: none;
+            z-index: 20;
+            max-width: 200px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            border: 2px solid var(--monster-color);
+        }
+
+        h1 {
+            font-family: 'Bungee', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #7ad5ff;
+            text-shadow: 0 0 15px rgba(122, 213, 255, 0.4);
+        }
+
+        .form-label { font-size: 10px; color: #777; text-transform: uppercase; margin-bottom: 6px; display: block; font-weight: bold; text-align: left; }
+        
+        .form-control {
+            width: 100%;
+            background: #0d0d0f;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px;
+            color: var(--monster-color);
+            outline: none;
+            font-family: 'Fira Code';
+            font-size: 14px;
+            transition: border-color 0.3s;
+            margin-bottom: 10px;
+        }
+        .form-control:focus { border-color: var(--monster-color); }
+
+        .btn {
+            width: 100%;
+            background: var(--monster-color);
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            font-family: 'Bungee', cursive;
+            transition: all 0.3s;
+        }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(163, 49, 255, 0.4); }
+
+        .helper { margin-top: 20px; font-size: 0.9rem; }
+        .link-fun { color: #70d0ff; font-weight: 700; text-decoration: none; }
+
+        .code-panel {
+            margin-top: 20px;
+            border: 1px dashed rgba(163, 49, 255, 0.4);
+            border-radius: 10px;
+            padding: 12px;
+            background: rgba(9, 14, 30, 0.5);
+            font-family: 'Fira Code', monospace;
+            color: #adbfff;
+            font-size: 0.75rem;
+            text-align: left;
+        }
+        .code-panel span { color: #a331ff; font-weight: bold; }
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .alert-success { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+        .alert-danger { background: rgba(248, 113, 113, 0.2); color: #f87171; border: 1px solid #f87171; }
+
+    </style>
+</head>
+<body>
+    <div class="background-stars"></div>
+
+    <div class="card">
+        <div class="monster-area">
+            <div class="speech" id="speech">WHO ARE YOU AGAIN?</div>
+            <div class="monster" id="monster">
+                <div class="eye eye-l"><div class="pupil" id="pL"></div></div>
+                <div class="eye eye-r"><div class="pupil" id="pR"></div></div>
+            </div>
+        </div>
+
+        <h1>FORGOT_PASS.RT</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('forgot') }}">
+            <div style="margin-bottom: 15px;">
+                <label class="form-label">IDENTIFY: USERNAME</label>
+                <input type="text" class="form-control" id="username" name="username" required placeholder="User_123" />
+            </div>
+            <button type="submit" class="btn">REQUEST_RESET_CODE</button>
+        </form>
+
+        <div class="helper">
+            <a class="link-fun" href="{{ url_for('login') }}">[ Return to Login ]</a>
+        </div>
+
+        <div class="code-panel">
+            <div><span>execute</span>: generate_temp_token(user_id);</div>
+            <div><span>status</span>: waiting for human validation...</div>
+        </div>
+    </div>
+
+    <script>
+        const monster = document.getElementById('monster');
+        const speech = document.getElementById('speech');
+        const pL = document.getElementById('pL');
+        const pR = document.getElementById('pR');
+        const userField = document.getElementById('username');
+
+        let speechTimer;
+
+        function speak(text, duration = 8000) {
+            clearTimeout(speechTimer);
+            speech.innerText = text;
+            speech.style.display = 'block';
+            speechTimer = setTimeout(() => { 
+                speech.style.display = 'none';
+            }, duration);
+        }
+
+        // Eye Tracking
+        document.addEventListener('mousemove', (e) => {
+            const rect = monster.getBoundingClientRect();
+            const centerX = rect.left + rect.width/2;
+            const centerY = rect.top + rect.height/2;
+            const moveX = (e.clientX - centerX) / 25;
+            const moveY = (e.clientY - centerY) / 25;
+            pL.style.transform = `translate(${Math.max(-8, Math.min(8, moveX))}px, ${Math.max(-8, Math.min(8, moveY))}px)`;
+            pR.style.transform = `translate(${Math.max(-8, Math.min(8, moveX))}px, ${Math.max(-8, Math.min(8, moveY))}px)`;
+        });
+
+        // Tapping/Interaction
+        monster.addEventListener('click', () => {
+            speak("I CAN'T JUST GIVE IT TO YOU! USE THE FORM!", 7000);
+            monster.style.transform = "scale(1.1) rotate(5deg)";
+            setTimeout(() => monster.style.transform = "scale(1)", 200);
+        });
+
+        // Input Focus
+        userField.addEventListener('focus', () => {
+            speak("LET ME CHECK MY DATABASE...", 8000);
+        });
+
+        // Initial Snarky Remark
+        setTimeout(() => speak("DID YOU TRY 'PASSWORD123'? JUST KIDDING!", 10000), 1500);
+    </script>
+</body>
+</html>

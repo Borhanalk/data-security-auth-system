@@ -1,0 +1,3 @@
+http://localhost:5000
+email: your-email@example.com
+partners: Partner 1 Name, Partner 2 Name
