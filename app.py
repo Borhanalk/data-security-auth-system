@@ -109,8 +109,14 @@ def register():
         conn.commit()
         conn.close()
 
-        flash("Account created!")
-        return redirect(url_for("login"))
+        # Log in the user immediately after registration
+        session["username"] = username
+        session["role"] = role
+
+        flash("Account created and logged in!")
+        if role == "admin":
+            return redirect(url_for("admin"))
+        return redirect(url_for("user"))
 
     return render_template("register.html")
 
