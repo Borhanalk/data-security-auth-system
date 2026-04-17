@@ -194,14 +194,37 @@
         </div>
 
         <h2 class="text-lg font-bold mb-5" style="font-family: 'Bungee'; color: #7ad5ff;">USER_REGISTRATION</h2>
-        <!-- According to system design, the admin is initialized as the first user in the database.
-             Regular users can only register through this page -->
-        <p style="color: #ffea00; font-size: 12px; margin-bottom: 12px;">According to system design, the admin is initialized as the first user in the database. Regular users can only register through this page.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="
+                    margin-bottom: 12px;
+                    padding: 10px 14px;
+                    border-radius: 10px;
+                    font-size: 13px;
+                    font-weight: bold;
+                    font-family: 'Fira Code', monospace;
+                    {% if category == 'success' %}
+                    background: rgba(0, 200, 100, 0.12);
+                    color: #4ade80;
+                    border: 1px solid rgba(0, 200, 100, 0.35);
+                    {% else %}
+                    background: rgba(255, 49, 49, 0.15);
+                    color: #ff8a8a;
+                    border: 1px solid rgba(255, 49, 49, 0.4);
+                    {% endif %}
+                    text-align: left;
+                ">{% if category == 'success' %}✓{% else %}⚠{% endif %} {{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
     <form method="POST" action="{{ url_for('register') }}">
 
     <div class="field">
         <label>Username</label>
-        <input type="text" name="username" class="input-box" required>
+        <input type="text" name="username" id="regUser" class="input-box" required>
     </div>
 
     <div class="field">
@@ -327,5 +350,6 @@
 
         passwordInput.addEventListener('input', validatePasswords);
         confirmPasswordInput.addEventListener('input', validatePasswords);
+    </script>
 </body>
 </html>

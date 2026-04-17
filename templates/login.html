@@ -224,7 +224,24 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
-                <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }}" style="margin-bottom: 12px; color: #ffb86c;">{{ message }}</div>
+                <div style="
+                    margin-bottom: 14px;
+                    padding: 10px 14px;
+                    border-radius: 10px;
+                    font-size: 13px;
+                    font-weight: bold;
+                    font-family: 'Fira Code', monospace;
+                    {% if category == 'success' %}
+                    background: rgba(0, 200, 100, 0.12);
+                    color: #4ade80;
+                    border: 1px solid rgba(0, 200, 100, 0.35);
+                    {% else %}
+                    background: rgba(255, 49, 49, 0.15);
+                    color: #ff8a8a;
+                    border: 1px solid rgba(255, 49, 49, 0.4);
+                    {% endif %}
+                    text-align: left;
+                ">{% if category == 'success' %}✓{% else %}⚠{% endif %} {{ message }}</div>
             {% endfor %}
         {% endif %}
         {% endwith %}

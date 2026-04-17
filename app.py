@@ -21,13 +21,6 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 
-def clear_users():
-    conn = get_db_connection()
-    conn.execute("DELETE FROM users")
-    conn.commit()
-    conn.close()
-
-
 def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
@@ -44,17 +37,20 @@ def init_db():
     conn.commit()
     conn.close()
 
-    clear_users()
-
 
 @app.route("/", methods=["GET", "POST"])
 def login():
+    if session.get("role") == "admin":
+        return redirect(url_for("admin"))
+    if session.get("role") == "user":
+        return redirect(url_for("user"))
+
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
 
         if not username or not password:
-            flash("Please enter username and password")
+            flash("Please enter username and password", "error")
             return redirect(url_for("login"))
 
         conn = get_db_connection()
@@ -71,7 +67,7 @@ def login():
                 return redirect(url_for("admin"))
             return redirect(url_for("user"))
 
-        flash("Wrong username or password")
+        flash("Wrong username or password", "error")
         return redirect(url_for("login"))
 
     return render_template("login.html")
@@ -79,17 +75,22 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if session.get("role") == "admin":
+        return redirect(url_for("admin"))
+    if session.get("role") == "user":
+        return redirect(url_for("user"))
+
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
 
         if not username or not password or not confirm_password:
-            flash("All fields are required")
+            flash("All fields are required", "error")
             return redirect(url_for("register"))
 
         if password != confirm_password:
-            flash("Passwords do not match")
+            flash("Passwords do not match", "error")
             return redirect(url_for("register"))
 
         conn = get_db_connection()
@@ -99,7 +100,6 @@ def register():
 
         if user_count == 0:
             role = "admin"
-            flash("You are the first user. Role set to admin.")
         else:
             role = "user"
 
@@ -109,7 +109,7 @@ def register():
         ).fetchone()
         if existing:
             conn.close()
-            flash("Username already exists")
+            flash("Username already exists", "error")
             return redirect(url_for("register"))
 
         conn.execute(
@@ -121,11 +121,10 @@ def register():
         conn.commit()
         conn.close()
 
-        # Log in the user immediately after registration
         session["username"] = username
         session["role"] = role
 
-        flash("Account created and logged in!")
+        flash("Account created successfully!", "success")
         if role == "admin":
             return redirect(url_for("admin"))
         return redirect(url_for("user"))
@@ -156,7 +155,7 @@ def forgot():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         if not username:
-            flash("Username is required")
+            flash("Username is required", "error")
             return redirect(url_for("forgot"))
 
         conn = get_db_connection()
@@ -167,7 +166,7 @@ def forgot():
         conn.close()
 
         if not user:
-            flash("User not found")
+            flash("User not found", "error")
             return redirect(url_for("forgot"))
 
         return redirect(url_for("reset", username=username))
@@ -179,7 +178,7 @@ def forgot():
 def reset():
     username = request.args.get("username")
     if not username:
-        flash("Missing username")
+        flash("Missing username", "error")
         return redirect(url_for("forgot"))
 
     if request.method == "POST":
@@ -187,11 +186,11 @@ def reset():
         confirm_password = request.form.get("confirm_password", "")
 
         if not password or not confirm_password:
-            flash("All fields are required")
+            flash("All fields are required", "error")
             return redirect(url_for("reset", username=username))
 
         if password != confirm_password:
-            flash("Passwords do not match")
+            flash("Passwords do not match", "error")
             return redirect(url_for("reset", username=username))
 
         conn = get_db_connection()
@@ -201,7 +200,7 @@ def reset():
         ).fetchone()
         if not user:
             conn.close()
-            flash("User not found")
+            flash("User not found", "error")
             return redirect(url_for("forgot"))
 
         conn.execute(
@@ -211,7 +210,7 @@ def reset():
         conn.commit()
         conn.close()
 
-        flash("Password updated")
+        flash("Password updated successfully!", "success")
         return redirect(url_for("login"))
 
     return render_template("reset.html", username=username)
