@@ -123,6 +123,33 @@
             font-size: 13px;
         }
         .input-box:focus { border-color: var(--monster-color); background: #121217; }
+        
+        .input-box.error {
+            border-color: #ff3131 !important;
+            background: rgba(255, 49, 49, 0.1) !important;
+        }
+        
+        .input-box.success {
+            border-color: #00ff00 !important;
+            background: rgba(0, 255, 0, 0.05) !important;
+        }
+
+        .validation-msg {
+            font-size: 11px;
+            margin-top: 4px;
+            display: none;
+            font-weight: bold;
+        }
+        
+        .validation-msg.error {
+            color: #ff3131;
+            display: block;
+        }
+        
+        .validation-msg.success {
+            color: #00ff00;
+            display: block;
+        }
 
         .btn {
             width: 100%;
@@ -137,7 +164,13 @@
             font-family: 'Bungee', cursive;
             transition: all 0.3s;
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(163, 49, 255, 0.4); }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(163, 49, 255, 0.4); }
+        
+        .btn:disabled {
+            background: #666666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
 
         .annoyed { animation: shake 0.1s infinite !important; background: #ff3131 !important; }
         @keyframes shake {
@@ -173,15 +206,16 @@
 
     <div class="field">
         <label>Password</label>
-        <input type="password" name="password" class="input-box" required>
+        <input type="password" name="password" id="password" class="input-box" required>
     </div>
 
     <div class="field">
         <label>Confirm Password</label>
-        <input type="password" name="confirm_password" class="input-box" required>
+        <input type="password" name="confirm_password" id="confirm_password" class="input-box" required>
+        <div class="validation-msg" id="passwordMatch"></div>
     </div>
 
-    <button class="btn" type="submit">CREATE ACCOUNT</button>
+    <button class="btn" id="registerBtn" type="submit">CREATE ACCOUNT</button>
     </form>
 
         <p class="text-[10px] mt-5 text-gray-500">
@@ -249,6 +283,49 @@
         document.getElementById('registerBtn').onclick = () => {
             speak("PROCESSING DATA...");
         };
-    </script>
+
+        // Password Validation
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const passwordMatchMsg = document.getElementById('passwordMatch');
+        const registerBtn = document.getElementById('registerBtn');
+
+        function validatePasswords() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            if (password === '' || confirmPassword === '') {
+                passwordMatchMsg.classList.remove('success', 'error');
+                passwordInput.classList.remove('success', 'error');
+                confirmPasswordInput.classList.remove('success', 'error');
+                registerBtn.disabled = false;
+                return;
+            }
+
+            if (password === confirmPassword) {
+                passwordMatchMsg.textContent = '✓ Passwords match!';
+                passwordMatchMsg.classList.remove('error');
+                passwordMatchMsg.classList.add('success');
+                passwordInput.classList.remove('error');
+                passwordInput.classList.add('success');
+                confirmPasswordInput.classList.remove('error');
+                confirmPasswordInput.classList.add('success');
+                registerBtn.disabled = false;
+                speak("PASSWORDS MATCH!");
+            } else {
+                passwordMatchMsg.textContent = '✗ Passwords do not match!';
+                passwordMatchMsg.classList.remove('success');
+                passwordMatchMsg.classList.add('error');
+                passwordInput.classList.remove('success');
+                passwordInput.classList.add('error');
+                confirmPasswordInput.classList.remove('success');
+                confirmPasswordInput.classList.add('error');
+                registerBtn.disabled = true;
+                speak("PASSWORDS MISMATCH!");
+            }
+        }
+
+        passwordInput.addEventListener('input', validatePasswords);
+        confirmPasswordInput.addEventListener('input', validatePasswords);
 </body>
 </html>

@@ -46,6 +46,7 @@ def init_db():
 
     clear_users()
 
+
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -57,7 +58,10 @@ def login():
             return redirect(url_for("login"))
 
         conn = get_db_connection()
-        user = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
+        user = conn.execute(
+            "SELECT * FROM users WHERE username=?",
+            (username,)
+        ).fetchone()
         conn.close()
 
         if user and user["password_hash"] == hash_password(password):
@@ -71,6 +75,7 @@ def login():
         return redirect(url_for("login"))
 
     return render_template("login.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -88,7 +93,9 @@ def register():
             return redirect(url_for("register"))
 
         conn = get_db_connection()
-        user_count = conn.execute("SELECT COUNT(*) as cnt FROM users").fetchone()[0]
+        user_count = conn.execute(
+            "SELECT COUNT(*) as cnt FROM users"
+        ).fetchone()[0]
 
         if user_count == 0:
             role = "admin"
@@ -96,14 +103,19 @@ def register():
         else:
             role = "user"
 
-        existing = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
+        existing = conn.execute(
+            "SELECT * FROM users WHERE username=?",
+            (username,)
+        ).fetchone()
         if existing:
             conn.close()
             flash("Username already exists")
             return redirect(url_for("register"))
 
         conn.execute(
-            "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
+            "INSERT INTO users"
+            " (username, password_hash, role)"
+            " VALUES (?, ?, ?)",
             (username, hash_password(password), role),
         )
         conn.commit()
@@ -120,17 +132,24 @@ def register():
 
     return render_template("register.html")
 
+
 @app.route("/admin")
 def admin():
     if session.get("role") != "admin":
         return redirect(url_for("login"))
-    return render_template("admin.html", username=session.get("username"))
+    return render_template(
+        "admin.html", username=session.get("username")
+    )
+
 
 @app.route("/user")
 def user():
     if session.get("role") != "user":
         return redirect(url_for("login"))
-    return render_template("user.html", username=session.get("username"))
+    return render_template(
+        "user.html", username=session.get("username")
+    )
+
 
 @app.route("/forgot", methods=["GET", "POST"])
 def forgot():
@@ -141,7 +160,10 @@ def forgot():
             return redirect(url_for("forgot"))
 
         conn = get_db_connection()
-        user = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
+        user = conn.execute(
+            "SELECT * FROM users WHERE username=?",
+            (username,)
+        ).fetchone()
         conn.close()
 
         if not user:
@@ -151,6 +173,7 @@ def forgot():
         return redirect(url_for("reset", username=username))
 
     return render_template("forgot.html")
+
 
 @app.route("/reset", methods=["GET", "POST"])
 def reset():
@@ -172,13 +195,19 @@ def reset():
             return redirect(url_for("reset", username=username))
 
         conn = get_db_connection()
-        user = conn.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
+        user = conn.execute(
+            "SELECT * FROM users WHERE username=?",
+            (username,)
+        ).fetchone()
         if not user:
             conn.close()
             flash("User not found")
             return redirect(url_for("forgot"))
 
-        conn.execute("UPDATE users SET password_hash=? WHERE username=?", (hash_password(password), username))
+        conn.execute(
+            "UPDATE users SET password_hash=? WHERE username=?",
+            (hash_password(password), username)
+        )
         conn.commit()
         conn.close()
 
@@ -187,10 +216,12 @@ def reset():
 
     return render_template("reset.html", username=username)
 
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
 
 if __name__ == "__main__":
     init_db()
